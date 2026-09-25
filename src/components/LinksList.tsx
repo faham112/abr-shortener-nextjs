@@ -48,7 +48,7 @@ export function LinksList({
   return (
     <div className="space-y-3">
       {links.map((u) => {
-        const short = `${siteUrl.replace(/\/$/, "")}/${u.shortCode}`;
+        const short = siteUrl.replace(/\/$/, "") + "/" + u.shortCode;
         return (
           <div key={u.id} className="card flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 flex-1">
@@ -72,10 +72,27 @@ export function LinksList({
               <p className="truncate text-xs text-[var(--muted)]">{u.longUrl}</p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              <button type="button" className="btn-ghost text-xs" onClick={() => navigator.clipboard.writeText(short)}>Copy</button>
-              <Link href={`${basePath}?tab=create&edit=${u.id}`} className="btn-ghost text-xs">Edit</Link>
-              <Link href={`${basePath}?stats=${u.id}`} className="btn-ghost text-xs">Stats</Link>
-              <button type="button" className="btn-ghost text-xs text-[var(--err)]" disabled={pending} onClick={() => onDelete(u.id)}>Delete</button>
+              <button
+                type="button"
+                className="btn-ghost text-xs"
+                onClick={() => navigator.clipboard.writeText(short)}
+              >
+                Copy
+              </button>
+              <Link href={basePath + "?tab=create&edit=" + u.id} className="btn-ghost text-xs">
+                Edit
+              </Link>
+              <Link href={basePath + "?stats=" + u.id} className="btn-ghost text-xs">
+                Stats
+              </Link>
+              <button
+                type="button"
+                className="btn-ghost text-xs text-[var(--err)]"
+                disabled={pending}
+                onClick={() => onDelete(u.id)}
+              >
+                Delete
+              </button>
             </div>
           </div>
         );
