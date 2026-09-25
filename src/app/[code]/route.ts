@@ -6,6 +6,14 @@ import {
   parseUserAgent,
 } from "@/lib/utils";
 
+function esc(s: string): string {
+  return s
+    .replace(/&/g, "&" + "amp;")
+    .replace(/</g, "&" + "lt;")
+    .replace(/>/g, "&" + "gt;")
+    .replace(/"/g, "&" + "quot;");
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ code: string }> }
@@ -72,7 +80,7 @@ export async function GET(
 
     if (!link.previewEnabled) {
       return new NextResponse(
-        `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><title></title></head><body></body></html>`,
+        "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow,noarchive,nosnippet\"><title></title></head><body></body></html>",
         { status: 200, headers }
       );
     }
@@ -87,12 +95,15 @@ export async function GET(
     const shortUrl = `${siteUrl.replace(/\/$/, "")}/${link.shortCode}`;
     const siteName = "News Daily";
 
-    const esc = (s: string) =>
-      s
-        .replace(/&/g, "&")
-        .replace(/</g, "<")
-        .replace(/>/g, ">")
-        .replace(/"/g, """);
+    const ogImage = image
+      ? `<meta property="og:image" content="${esc(image)}">
+<meta property="og:image:secure_url" content="${esc(image)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">`
+      : "";
+    const twImage = image
+      ? `<meta name="twitter:image" content="${esc(image)}">`
+      : "";
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -105,15 +116,12 @@ export async function GET(
 <meta property="og:url" content="${esc(shortUrl)}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
-${image ? `<meta property="og:image" content="${esc(image)}">
-<meta property="og:image:secure_url" content="${esc(image)}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">` : ""}
+${ogImage}
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
-${image ? `<meta name="twitter:image" content="${esc(image)}">` : ""}
+${twImage}
 <meta name="description" content="${esc(description)}">
 <meta name="robots" content="noindex, nofollow">
 </head>
