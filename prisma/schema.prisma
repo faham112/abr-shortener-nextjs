@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  user
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(150)
+  password  String   @db.VarChar(255)
+  role      Role     @default(user)
+  createdAt DateTime @default(now()) @map("created_at")
+  urls      Url[]
+
+  @@map("users")
+}
+
+model Url {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @map("user_id")
+  shortCode      String   @unique @map("short_code") @db.VarChar(20)
+  longUrl        String   @map("long_url") @db.Text
+  title          String?  @db.VarChar(255)
+  imageUrl       String?  @map("image_url") @db.Text
+  description    String?  @db.Text
+  previewEnabled Boolean  @default(true) @map("preview_enabled")
+  clicks         Int      @default(0)
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clickLogs      Click[]
+
+  @@index([userId])
+  @@map("urls")
+}
+
+model Click {
+  id        Int      @id @default(autoincrement())
+  urlId     Int      @map("url_id")
+  ip        String?  @db.VarChar(45)
+  userAgent String?  @map("user_agent") @db.Text
+  referer   String?  @db.Text
+  country   String?  @db.VarChar(100)
+  city      String?  @db.VarChar(100)
+  device    String?  @db.VarChar(50)
+  browser   String?  @db.VarChar(50)
+  os        String?  @db.VarChar(50)
+  isBot     Boolean  @default(false) @map("is_bot")
+  createdAt DateTime @default(now()) @map("created_at")
+  url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
+
+  @@index([urlId])
+  @@index([createdAt])
+  @@index([isBot])
+  @@map("clicks")
+}
