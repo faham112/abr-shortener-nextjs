@@ -72,35 +72,10 @@ export function LinksList({
               <p className="truncate text-xs text-[var(--muted)]">{u.longUrl}</p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              <button
-                type="button"
-                className="btn-ghost text-xs"
-                onClick={() => {
-                  navigator.clipboard.writeText(short);
-                }}
-              >
-                Copy
-              </button>
-              <Link
-                href={`${basePath}?tab=create&edit=${u.id}`}
-                className="btn-ghost text-xs"
-              >
-                Edit
-              </Link>
-              <Link
-                href={`${basePath}?stats=${u.id}`}
-                className="btn-ghost text-xs"
-              >
-                Stats
-              </Link>
-              <button
-                type="button"
-                className="btn-ghost text-xs text-[var(--err)]"
-                disabled={pending}
-                onClick={() => onDelete(u.id)}
-              >
-                Delete
-              </button>
+              <button type="button" className="btn-ghost text-xs" onClick={() => navigator.clipboard.writeText(short)}>Copy</button>
+              <Link href={`${basePath}?tab=create&edit=${u.id}`} className="btn-ghost text-xs">Edit</Link>
+              <Link href={`${basePath}?stats=${u.id}`} className="btn-ghost text-xs">Stats</Link>
+              <button type="button" className="btn-ghost text-xs text-[var(--err)]" disabled={pending} onClick={() => onDelete(u.id)}>Delete</button>
             </div>
           </div>
         );
